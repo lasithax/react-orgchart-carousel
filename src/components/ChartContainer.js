@@ -11,6 +11,9 @@ import JSONDigger from "json-digger";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import ChartNode from "./ChartNode";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "./ChartContainer.css";
 
 const propTypes = {
@@ -294,6 +297,47 @@ const ChartContainer = forwardRef(
       }
     }));
 
+    const renderNodes = (nodes) => {
+      if (nodes.length > 10) { // Adjust the number as per your requirement
+        const settings = {
+          dots: true,
+          infinite: false,
+          speed: 500,
+          slidesToShow: 3,
+          slidesToScroll: 3
+        };
+        return (
+          <Slider {...settings}>
+            {nodes.map((node, index) => (
+              <ChartNode
+                key={index}
+                datasource={node}
+                NodeTemplate={NodeTemplate}
+                draggable={draggable}
+                collapsible={collapsible}
+                multipleSelect={multipleSelect}
+                changeHierarchy={changeHierarchy}
+                onClickNode={onClickNode}
+              />
+            ))}
+          </Slider>
+        );
+      } else {
+        return nodes.map((node, index) => (
+          <ChartNode
+            key={index}
+            datasource={node}
+            NodeTemplate={NodeTemplate}
+            draggable={draggable}
+            collapsible={collapsible}
+            multipleSelect={multipleSelect}
+            changeHierarchy={changeHierarchy}
+            onClickNode={onClickNode}
+          />
+        ));
+      }
+    };
+
     return (
       <div
         ref={container}
@@ -310,15 +354,7 @@ const ChartContainer = forwardRef(
           onMouseMove={pan && panning ? panHandler : undefined}
         >
           <ul>
-            <ChartNode
-              datasource={attachRel(ds, "00")}
-              NodeTemplate={NodeTemplate}
-              draggable={draggable}
-              collapsible={collapsible}
-              multipleSelect={multipleSelect}
-              changeHierarchy={changeHierarchy}
-              onClickNode={onClickNode}
-            />
+            {renderNodes(attachRel(ds, "00").children)}
           </ul>
         </div>
         <a
